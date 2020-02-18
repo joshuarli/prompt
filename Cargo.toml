@@ -1,0 +1,19 @@
+[package]
+name = "prompt"
+version = "0.0.0"
+authors = ["Joshua Li <josh@jrl.ninja>"]
+license = "ISC"
+
+[dependencies]
+git2 = { version = "0.10", default-features = false }
+
+[[bin]]
+name = "prompt"
+path = "src/main.rs"
+
+# https://doc.rust-lang.org/cargo/reference/manifest.html#the-profile-sections
+[profile.release]
+panic = "abort"  # remove support for stack unwinding for smaller releases
+lto = true
+opt-level = "z"  # smallest build possible
+codegen-units = 1  # disable parallel codegen because it prevents some optimizations
