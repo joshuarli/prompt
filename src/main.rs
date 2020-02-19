@@ -1,4 +1,4 @@
-use std::{ process };
+use std::{ env, process };
 
 extern crate git2;
 use git2::{ Error, ErrorCode, Repository, StatusOptions };
@@ -41,9 +41,28 @@ fn index_changed(repo: &Repository) -> bool {
 }
 
 fn main () {
+    let user = match env::var("USER") {
+        Ok(val) => val,
+        Err(_e) => String::new(),
+    };
+    // TODO: conditionally try HOSTNAME based on SHELL (set by bash iirc)
+    // HOST is zsh-specific
+    // Also, on linux procfs you can read from /proc/sys/kernel/hostname.
+    // So might be worth trying that first and then falling back to shell env vars.
+    // The most correct + universal (posix) way is to use the gethostname syscall,
+    // and there's a crate for that, but i'd like to say reading env vars are faster
+    // since they don't involve syscalls. Definitely better than procfs though.
+    let hostname = match env::var("HOST") {
+        Ok(val) => val,
+        Err(_e) => String::new(),
+    };
+
+    print!("{}@{}", user, hostname);
+
     let repo = match Repository::open(".") {
         Ok(repo) => repo,
         Err(_e) => {
+            print!("\n");
             process::exit(0);
         }
     };
