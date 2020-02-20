@@ -57,7 +57,12 @@ fn main () {
         Err(_e) => String::new(),
     };
 
-    print!("{}@{}", user, hostname);
+    // TODO: if it matches HOME, then print it as ~
+    // TODO: less unwrap and actually think about handling errors? unwrap_or, unwrap_or_else
+    let pwd = env::current_dir().unwrap();
+    let wd = pwd.as_path().file_name().unwrap().to_str().unwrap();
+
+    print!("{}@{} {}", user, hostname, wd);
 
     let repo = match Repository::open(".") {
         Ok(repo) => repo,
