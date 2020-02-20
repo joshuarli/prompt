@@ -29,6 +29,7 @@ fn index_changed(repo: &Repository) -> bool {
 
     let statuses = repo.statuses(Some(&mut opts)).unwrap();
     for entry in statuses.iter() {
+        // TODO: doesn't work for unstaged changes
         let is_index_changed = match entry.status() {
             s if s.contains(git2::Status::INDEX_NEW) => true,
             s if s.contains(git2::Status::INDEX_MODIFIED) => true,
@@ -55,7 +56,9 @@ fn main () {
     let pwd = env::current_dir().unwrap();
     let wd = pwd.as_path().file_name().unwrap().to_str().unwrap();
 
-    print!("{}@{:?} {}", user, gethostname(), wd);
+    let _hostname = gethostname();  // im bad at rust why do i have to separate this
+    let hostname = _hostname.to_str().unwrap();
+    print!("{}@{} {}", user, hostname, wd);
 
     let repo = match Repository::open(".") {
         Ok(repo) => repo,
@@ -69,5 +72,5 @@ fn main () {
         print!(" * ");
     }
 
-    println!("{}", get_branch_name(&repo).unwrap());
+    println!(" {}", get_branch_name(&repo).unwrap());
 }
