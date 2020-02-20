@@ -1,7 +1,11 @@
 use std::{ env, process };
 
+extern crate gethostname;
+use gethostname::gethostname;
+
 extern crate git2;
 use git2::{ Error, ErrorCode, Repository, StatusOptions };
+
 
 fn get_branch_name(repo: &Repository) -> Result<String, Error> {
     let head = match repo.head() {
@@ -45,24 +49,13 @@ fn main () {
         Ok(val) => val,
         Err(_e) => String::new(),
     };
-    // TODO: conditionally try HOSTNAME based on SHELL (set by bash iirc)
-    // HOST is zsh-specific
-    // Also, on linux procfs you can read from /proc/sys/kernel/hostname.
-    // So might be worth trying that first and then falling back to shell env vars.
-    // The most correct + universal (posix) way is to use the gethostname syscall,
-    // and there's a crate for that, but i'd like to say reading env vars are faster
-    // since they don't involve syscalls. Definitely better than procfs though.
-    let hostname = match env::var("HOST") {
-        Ok(val) => val,
-        Err(_e) => String::new(),
-    };
 
     // TODO: if it matches HOME, then print it as ~
     // TODO: less unwrap and actually think about handling errors? unwrap_or, unwrap_or_else
     let pwd = env::current_dir().unwrap();
     let wd = pwd.as_path().file_name().unwrap().to_str().unwrap();
 
-    print!("{}@{} {}", user, hostname, wd);
+    print!("{}@{:?} {}", user, gethostname(), wd);
 
     let repo = match Repository::open(".") {
         Ok(repo) => repo,

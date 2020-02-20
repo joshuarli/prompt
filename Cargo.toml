@@ -5,6 +5,7 @@ authors = ["Joshua Li <josh@jrl.ninja>"]
 license = "ISC"
 
 [dependencies]
+gethostname = { version = "0.2.1" }
 git2 = { version = "0.10", default-features = false }
 
 [[bin]]
