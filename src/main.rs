@@ -29,13 +29,17 @@ fn index_changed(repo: &Repository) -> bool {
 
     let statuses = repo.statuses(Some(&mut opts)).unwrap();
     for entry in statuses.iter() {
-        // TODO: doesn't work for unstaged changes
         let is_index_changed = match entry.status() {
             s if s.contains(git2::Status::INDEX_NEW) => true,
             s if s.contains(git2::Status::INDEX_MODIFIED) => true,
             s if s.contains(git2::Status::INDEX_DELETED) => true,
             s if s.contains(git2::Status::INDEX_RENAMED) => true,
             s if s.contains(git2::Status::INDEX_TYPECHANGE) => true,
+            s if s.contains(git2::Status::WT_NEW) => true,
+            s if s.contains(git2::Status::WT_MODIFIED) => true,
+            s if s.contains(git2::Status::WT_DELETED) => true,
+            s if s.contains(git2::Status::WT_RENAMED) => true,
+            s if s.contains(git2::Status::WT_TYPECHANGE) => true,
             _ => false,
         };
         if is_index_changed {
@@ -69,7 +73,7 @@ fn main () {
     };
 
     if index_changed(&repo) {
-        print!(" * ");
+        print!(" *");
     }
 
     println!(" {}", get_branch_name(&repo).unwrap());
