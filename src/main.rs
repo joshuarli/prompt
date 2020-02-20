@@ -17,15 +17,13 @@ fn get_branch_name(repo: &Repository) -> Result<String, Error> {
     };
     let head = head.as_ref().and_then(|h| h.shorthand());
     // TODO: detached HEAD (e.g. in a checkout of HEAD~1)
-    // Also, write tests based on the relatively new git branch --show-current,
-    // which in an empty repo will be master but we want to show HEAD (no branch)
-    // and also in detached head we want to show (detached HEAD) instead of blank (whcih is show-current's behavior)
-    return Ok(head.unwrap_or("HEAD (no branch)").to_string());
+    return Ok(head.unwrap_or("(empty branch)").to_string());
 }
 
 fn index_changed(repo: &Repository) -> bool {
     let mut opts = StatusOptions::new();
-    opts.include_untracked(true);  // recurse_untracked_dirs?
+    opts.include_untracked(true);
+    // TODO: might want to recurse_untracked_dirs
 
     let statuses = repo.statuses(Some(&mut opts)).unwrap();
     for entry in statuses.iter() {

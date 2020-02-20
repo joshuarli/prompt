@@ -1,8 +1,10 @@
 name = prompt
 
-.PHONY: build
-build:
+target/debug/$(name): src/main.rs
 	cargo build
+
+test: target/debug/$(name)
+	./test.sh
 
 TARGETS = x86_64-unknown-linux-gnu x86_64-unknown-linux-musl x86_64-apple-darwin
 
