@@ -1,4 +1,5 @@
 use std::{ env, process };
+use std::fmt::Write;
 
 extern crate gethostname;
 use gethostname::gethostname;
@@ -60,19 +61,22 @@ fn main () {
 
     let _hostname = gethostname();  // im bad at rust why do i have to separate this
     let hostname = _hostname.to_str().unwrap();
-    print!("{}@{} {}", user, hostname, wd);
+
+    let mut prompt = String::new();
+    write!(&mut prompt, "{}@{} {}", user, hostname, wd).unwrap();
 
     let repo = match Repository::open(".") {
         Ok(repo) => repo,
         Err(_e) => {
-            print!("\n");
+            println!("{} $ ", prompt.to_string());
             process::exit(0);
         }
     };
 
     if index_changed(&repo) {
-        print!(" *");
+        prompt.push_str(" *");
     }
 
-    println!(" {}", get_branch_name(&repo).unwrap());
+    write!(&mut prompt, " {}", get_branch_name(&repo).unwrap()).unwrap();
+    println!("{} $ ", prompt.to_string());
 }
