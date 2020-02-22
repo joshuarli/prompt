@@ -1,4 +1,5 @@
 use std::{ env, process };
+use std::path::Path;
 use std::fmt::Write;
 
 extern crate gethostname;
@@ -65,7 +66,24 @@ fn main () {
     let mut prompt = String::new();
     write!(&mut prompt, "{}@{} {}", user, hostname, wd).unwrap();
 
-    let repo = match Repository::open(".") {
+    // XXX: need to canonicalize otherwise .parent will return Some("")
+    // see https://github.com/rust-lang/rust/issues/36861
+    let _gitroot = Path::new(".").canonicalize().unwrap();
+    let mut gitroot = _gitroot.as_path();
+    loop {
+        if gitroot.join(".git").is_dir() {
+            break;
+        }
+        gitroot = match gitroot.parent() {
+            Some(p) => p,
+            None => {
+                println!("{} $ ", prompt.to_string());
+                process::exit(0);
+            }
+        };
+    }
+
+    let repo = match Repository::open(gitroot) {
         Ok(repo) => repo,
         Err(_e) => {
             println!("{} $ ", prompt.to_string());

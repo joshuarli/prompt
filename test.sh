@@ -57,6 +57,15 @@ echo "1.9: undo the removal"
 git checkout f >/dev/null 2>&1
 assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-current) $ "
 
+echo "1.10: not inside gitroot"
+mkdir a
+cd a
+assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-current) $ "
+
+echo "1.11 add untracked file while not inside gitroot"
+touch ../foo
+assert_prompt "${USER}@$(hostname) $(basename "$PWD") * $(git branch --show-current) $ "
+
 # TODO: checkout to detach head. git branch --show-current will be blank, so additionally assert for that.
 
 # TODO: prompt but not inside gitroot
