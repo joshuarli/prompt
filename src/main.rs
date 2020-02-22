@@ -18,7 +18,6 @@ fn get_branch_name(repo: &Repository) -> Result<String, Error> {
         Err(e) => return Err(e),
     };
     let head = head.as_ref().and_then(|h| h.shorthand());
-    // TODO: detached HEAD (e.g. in a checkout of HEAD~1)
     return Ok(head.unwrap_or("(empty branch)").to_string());
 }
 
@@ -95,6 +94,11 @@ fn main () {
         prompt.push_str(" *");
     }
 
-    write!(&mut prompt, " {}", get_branch_name(&repo).unwrap()).unwrap();
+    let mut branch_name = get_branch_name(&repo).unwrap();
+    // XXX: this isn't 100% correct, but it'll do. I don't want to additionally inspect symbolic ref.
+    if branch_name == "HEAD" {
+        branch_name = "(detached HEAD)".to_string()
+    }
+    write!(&mut prompt, " {}", branch_name).unwrap();
     println!("{} $ ", prompt.to_string());
 }

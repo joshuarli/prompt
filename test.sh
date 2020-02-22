@@ -62,13 +62,15 @@ mkdir a
 cd a
 assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-current) $ "
 
-echo "1.11 add untracked file while not inside gitroot"
+echo "1.11: add untracked file while not inside gitroot"
 touch ../foo
 assert_prompt "${USER}@$(hostname) $(basename "$PWD") * $(git branch --show-current) $ "
 
-# TODO: checkout to detach head. git branch --show-current will be blank, so additionally assert for that.
-
-# TODO: prompt but not inside gitroot
+echo "1.12: checkout to detach head"
+rm ../foo
+git checkout HEAD~1 >/dev/null 2>&1
+assert_prompt "${USER}@$(hostname) $(basename "$PWD") (detached HEAD) $ "
+[ -z "$(git branch --show-current)" ] || echo "Additional check failed! Not actually a detached head."
 )
 
 (
