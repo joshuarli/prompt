@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+trap times EXIT
+
+dir="$1"
+cmd="$2"
+
+(
+cd "$dir"
+for _ in {1..100}; do
+    $cmd >/dev/null
+done
+)
