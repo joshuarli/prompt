@@ -49,13 +49,17 @@ fn index_changed(repo: &Repository) -> bool {
 }
 
 fn main () {
-    let user = match env::var("USER") {
-        Ok(val) => val,
-        Err(_e) => String::new(),
-    };
+    // colorization is optional and read through these env vars (recommended to populate via tput)
+    // it would be far too expensive to parse terminfo databases
+    let style_user = env::var("PROMPT_STYLE_USER").unwrap_or_default();
+    let style_hostname = env::var("PROMPT_STYLE_HOSTNAME").unwrap_or_default();
+    let style_wd = env::var("PROMPT_STYLE_WD").unwrap_or_default();
+    let style_branch = env::var("PROMPT_STYLE_BRANCH").unwrap_or_default();
+    let style_reset = env::var("PROMPT_STYLE_RESET").unwrap_or_default();
+
+    let user = env::var("USER").unwrap_or_default();
 
     // TODO: if it matches HOME, then print it as ~
-    // TODO: less unwrap and actually think about handling errors? unwrap_or, unwrap_or_else
     let pwd = env::current_dir().unwrap();
     let wd = pwd.as_path().file_name().unwrap().to_str().unwrap();
 
@@ -63,7 +67,12 @@ fn main () {
     let hostname = _hostname.to_str().unwrap();
 
     let mut prompt = String::new();
-    write!(&mut prompt, "{}@{} {}", user, hostname, wd).unwrap();
+    write!(
+        &mut prompt, "{}{}{}@{}{}{} {}{}{}",
+        style_user, user, style_reset,
+        style_hostname, hostname, style_reset,
+        style_wd, wd, style_reset,
+    ).unwrap();
 
     // XXX: need to canonicalize otherwise .parent will return Some("")
     // see https://github.com/rust-lang/rust/issues/36861
@@ -99,6 +108,6 @@ fn main () {
     if branch_name == "HEAD" {
         branch_name = "(detached HEAD)".to_string()
     }
-    write!(&mut prompt, " {}", branch_name).unwrap();
+    write!(&mut prompt, " {}{}{}", style_branch, branch_name, style_reset).unwrap();
     println!("{} $ ", prompt.to_string());
 }

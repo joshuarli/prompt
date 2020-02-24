@@ -13,3 +13,24 @@ i thought i could make it faster, but right now it's pretty much the same speed 
     $ ./bench . ./prompt.sh
     0m0.003s 0m0.004s
     0m1.144s 0m0.936s
+
+
+## usage
+
+there's optional colorization via these env vars:
+
+    - PROMPT_STYLE_USER
+    - PROMPT_STYLE_HOSTNAME
+    - PROMPT_STYLE_WD
+    - PROMPT_STYLE_BRANCH
+    - PROMPT_STYLE_RESET
+
+for example:
+
+```sh
+export PROMPT_STYLE_HOSTNAME="$(tput setaf 1)"  # red
+export PROMPT_STYLE_WD="$(tput setaf 6)"        # cyan
+export PROMPT_STYLE_BRANCH="$(tput setaf 2)"    # green
+export PROMPT_STYLE_RESET="$(tput sgr0)"
+export PS1='$(prompt)'
+```
