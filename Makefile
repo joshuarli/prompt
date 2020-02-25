@@ -16,8 +16,9 @@ release:
 define buildrelease
 rustup target add $(1)
 cargo build --release --target $(1)
-mv target/$(1)/release/$(name) $(name)-$(1)
-strip $(name)-$(1)
+mv target/$(1)/release/$(name) release/$(name)-$(1)
+# dunno why "rustup target add ...musl" is appended to strip args
+# strip release/$(name)-$(1)
 endef
 
 clean:
