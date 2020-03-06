@@ -2,7 +2,7 @@
 
 die () { >&2 echo "$1"; exit 1; }
 
-prompt="${PWD}/target/debug/prompt"
+prompt="${PWD}/prompt"
 
 assert_prompt () {
     out="$($prompt)"

@@ -1,25 +1,16 @@
 name = prompt
+flags=$(shell pkg-config --libs libgit2)
 
-target/debug/$(name): src/main.rs
-	cargo build
+$(name): src/main.c
+	gcc $(flags) -O2 src/main.c -o $(name)
 
-test: target/debug/$(name)
+fmt: src/main.c
+	clang-format -i src/main.c
+
+test: $(name)
 	./test.sh
 
-TARGETS = x86_64-unknown-linux-gnu x86_64-unknown-linux-musl x86_64-apple-darwin
-
-.PHONY: release
-release:
-	mkdir -p release
-	$(foreach TARGET,$(TARGETS), $(call buildrelease,$(TARGET)))
-
-define buildrelease
-rustup target add $(1)
-cargo build --release --target $(1)
-mv target/$(1)/release/$(name) release/$(name)-$(1)
-# dunno why "rustup target add ...musl" is appended to strip args
-# strip release/$(name)-$(1)
-endef
-
 clean:
-	rm -rf release target
+	rm -f $(name)
+
+.PHONY: test clean
