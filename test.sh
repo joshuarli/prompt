@@ -3,6 +3,7 @@
 die () { >&2 echo "$1"; exit 1; }
 
 prompt="${PWD}/prompt"
+# prompt="${PWD}/bench/old-prompt.sh"
 
 assert_prompt () {
     out="$($prompt)"
