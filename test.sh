@@ -19,6 +19,8 @@ assert_prompt () {
 tmp="$(mktemp -d)" || die 'mktemp failed'
 trap "rm -rf ${tmp}" EXIT
 
+unset PROMPT_STYLE_USER PROMPT_STYLE_HOSTNAME PROMPT_STYLE_WD PROMPT_STYLE_BRANCH PROMPT_STYLE_RESET
+
 (
 mkdir "${tmp}/test-1" && cd "${tmp}/test-1"
 
@@ -35,6 +37,14 @@ assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-curren
 
 echo "1.4: checkout new clean branch"
 git checkout -b foobar >/dev/null 2>&1
+assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-current) $ "
+
+echo "1.4.2: a slash in branch name"
+git branch -m ref/foo >/dev/null 2>&1
+assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-current) $ "
+
+echo "1.4.3: two slashes in branch name"
+git branch -m ref/foo/bar >/dev/null 2>&1
 assert_prompt "${USER}@$(hostname) $(basename "$PWD") $(git branch --show-current) $ "
 
 echo "1.5: add untracked file"
