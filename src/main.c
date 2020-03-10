@@ -87,10 +87,10 @@ int main(int argc, char **argv) {
   if (git_repository_head(&ref, repo) != 0) {
     branch = "(empty branch)";
   } else {
-    const char *head = git_reference_name(ref);
+    branch = git_reference_shorthand(ref);
 
-    get_last_segment(&branch, head, '/');
-
+    // XXX: this isn't 100% correct, but it'll do. I don't want to additionally
+    // inspect symbolic ref.
     if (strcmp(branch, "HEAD") == 0) {
       branch = "(detached HEAD)";
     }
