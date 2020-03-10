@@ -1,3 +1,3 @@
 #!/usr/bin/env zsh
 
-/home/josh/dev/projects/prompt/prompt
+exec /home/josh/dev/projects/prompt/prompt
