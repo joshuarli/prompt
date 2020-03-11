@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+trap times EXIT
+
+dir="$1"
+
+prompt_pwd () {
+    wd="${PWD##*/}"
+    printf %s "$wd"
+}
+
+prompt_git () {
+    cur_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return
+    [ -z "$(git status --porcelain -unormal)" ] || printf %s ' *'
+    [ "$cur_branch" = HEAD ] && cur_branch='(detached HEAD)'
+    printf %s " ${cur_branch}"
+}
+
+prompt () {
+    echo "${USER}@${HOST} $(prompt_pwd)$(prompt_git) $ "
+}
+
+(
+cd "$dir"
+for _ in {1..100}; do
+    prompt >/dev/null
+done
+)

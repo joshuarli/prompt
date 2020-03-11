@@ -3,7 +3,8 @@
 trap times EXIT
 
 dir="$1"
-cmd="$(realpath "$2")"
+
+prompt="${PWD}/../prompt"
 
 (
 export PROMPT_STYLE_HOSTNAME=''
@@ -13,6 +14,6 @@ export PROMPT_STYLE_RESET=''
 
 cd "$dir"
 for _ in {1..100}; do
-    $cmd >/dev/null
+    $prompt >/dev/null
 done
 )
