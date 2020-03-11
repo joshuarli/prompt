@@ -66,21 +66,17 @@ int main(int argc, char **argv) {
   git_buf_free(&gitroot);
 
   git_status_list *statuses = NULL;
+
   git_status_options opts = GIT_STATUS_OPTIONS_INIT;
-  opts.flags |= GIT_STATUS_OPT_DEFAULTS;
+  opts.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
+  opts.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED |
+      GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX;
+
   git_status_list_new(&statuses, repo, &opts);
 
   size_t count = git_status_list_entrycount(statuses);
-  for (int i = 0; i < count; ++i) {
-    const git_status_entry *entry = git_status_byindex(statuses, i);
-    if ((entry->status &
-         (GIT_STATUS_INDEX_NEW | GIT_STATUS_INDEX_MODIFIED |
-          GIT_STATUS_INDEX_DELETED | GIT_STATUS_INDEX_TYPECHANGE |
-          GIT_STATUS_WT_NEW | GIT_STATUS_WT_MODIFIED | GIT_STATUS_WT_DELETED |
-          GIT_STATUS_WT_RENAMED | GIT_STATUS_WT_TYPECHANGE)) > 0) {
-      changes = " *";
-      break;
-    }
+  if (count > 0) {
+    changes = " *";
   }
 
   git_reference *ref = NULL;
