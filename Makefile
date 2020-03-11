@@ -1,8 +1,6 @@
 name = prompt
-cflags = -std=c99 -O2 -march=native -Wpedantic
-# XXX: -O0 doesn't currently work under c99, need to put inline funcs in a different compilation unit
-cflags_release = $(cflags) -O2 -flto
-# TODO: compare -Os vs -O2 -flto size
+cflags = -std=c99 -O0 -march=native -Wpedantic
+cflags_release = $(cflags) -O2
 ldflags = $(shell pkg-config --libs libgit2)
 
 $(name): src/main.c
