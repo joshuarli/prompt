@@ -1,2 +1,59 @@
 tbh the absolute best way to do this would be
 to port this nim into my shell's source code
+
+zsh supports all of the prompt except my git part:
+export PROMPT='%n@%m %1d $ '
+
+i should add a %g for git branch.
+
+zsh vcs_info function has branch name:
+# autoload -Uz vcs_info
+# precmd() vcs_info
+# PS1='%~$vcs_info_msg_0_ '
+# setopt prompt_subst
+but it ultimately shells out to git.
+we can achieve much smaller prompt latency by doing this in-process.
+
+
+## building zsh
+
+--disable-etcdir
+
+macos system /etc/profile involves path_helper which is god awful.
+(can also be achieved with setopt no_global_rcs in zshenv)
+I only use ~/.zshenv (which just sources my ~/.profile) and ~/.zshrc.
+zshenv: sourced on all invocations of the shell, unless the -f option is set.
+    It should contain commands to set the command search path, plus other important environment variables.
+    Should not contain commands that produce output or assume the shell is attached to a tty.
+zshrc: sourced on interactive shells.
+
+./configure \
+--disable-etcdir \
+--disable-dynamic-nss \
+--enable-dynamic \
+--disable-restricted-r \
+--disable-locale \
+--disable-largefile
+
+make -j4
+make install.bin
+
+# important to install function definition files for compinit
+# which loads those functions (either from fresh or zcompdump)
+make install.fns
+
+/usr/local/bin/zsh
+
+# only the Zle/ functions are relevant to the nice completion i enjoy
+# i've tried --enable-function-subdirs and only setting FPATH to Zle/
+# but it doesn't seem to work, so i've deleted all others
+# autoload -U compinit && compinit -d "${XDG_CACHE_HOME}/zsh/zcompdump"
+
+# TODO: figure out how to get expand_alias back - it's a "completion widget"
+#       Completion/Base/Completer/_expand_alias
+
+## sources
+
+- https://htr3n.github.io/2018/07/faster-zsh/
+- https://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/
+  - this is cool but a little too much for me, i'd rather keep my needs minimal

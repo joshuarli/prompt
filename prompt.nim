@@ -1,7 +1,6 @@
 import os
 import std/strformat
 from std/strutils import rsplit
-#import terminal
 
 proc gethostname(name: cstring, len: csize_t): int32
   {.cdecl, importc: "gethostname", header: "<unistd.h>".}
@@ -48,6 +47,8 @@ elif cwd == "":
 # gave up on detecting changes to git worktree and index
 # too much of a perf hit
 # https://stackoverflow.com/questions/4075528/what-algorithm-does-git-use-to-detect-changes-on-your-working-tree
+
+# zsh has this vcs_info function which has check-for-changes, but ultimately this just shells out to git.
 
 if branch == "":
   write(stdout, &"{user}@{host} {cwd} $ ")
